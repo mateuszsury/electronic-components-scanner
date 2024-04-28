@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Electroscanner</title>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="static/script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Electronic component finder</h1>
+            <br>
+        </div>
+        <div class="form-container">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="file-upload">
+                    <label for="file-upload">Select image of component</label>
+                    <input id="file-upload" type="file" name="file" accept="image/*">
+                </div>
+                <br>
+                <div class="text-input">
+                    <p>or</p>
+                    <input id="text-input" type="text" name="text" placeholder="Enter marking">
+                </div>
+                <br>
+                <p></p>
+                <div class="submit-button">
+                    <label for="submit-button">Send</label>
+                    <button id="submit-button" type="button">Prześlij</button>
+                    <div id="loading-spinner" class="spinner" style="display: none;">
+                        <br>
+                        <p></p>
+                        <br>
+                        <i class="fas fa-spinner fa-spin"></i> Working...
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="result">
+            {% if extracted_text %}
+                <div class="extracted-text">
+                    <h2>Extracted Text:</h2>
+                    <p>{{ extracted_text }}</p>
+                </div>
+            {% endif %}
+            {% if error %}
+                <div class="error-message">
+                    <h2>Error:</h2>
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
