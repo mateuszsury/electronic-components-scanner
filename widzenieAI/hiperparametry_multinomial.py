@@ -1,17 +1,14 @@
-import os
+
 import rembg
 import numpy as np
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+from PIL import Image, ImageFilter, ImageEnhance
 import easyocr
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score
-import csv
-import joblib
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
-folder_path = r'C:\Users\mklim\Desktop\Informatyczne systemy automatyki\electronic-components-scanner-main\ai_jpg'
 
 def find_bounding_box(image_array):
     rows = np.any(image_array != [0, 0, 0, 0], axis=(1, 2))
@@ -50,7 +47,7 @@ def preprocess_image(image_path):
     # konwersja do RGB przed zapisaniem
     output_image_resized_rgb = output_image_resized.convert('RGB')
 
-    return np.array(output_image_resized_rgb)  # Zwróć obraz jako tablicę numpy
+    return np.array(output_image_resized_rgb)  
 
 # promień wyostrzania
 SHARPEN_RADIUS = 1
@@ -109,35 +106,15 @@ best_classifier.fit(X_train_vec, y_train)
 X_test_vec = vectorizer.transform(data['Text'])
 y_pred = best_classifier.predict(X_test_vec)
 
-# dokładność
 accuracy = accuracy_score(y_test, y_pred[:len(y_test)])
-print(f"Accuracy after hyperparameter tuning: {accuracy}")
+print("Dokładność modelu: {:.2f}%".format(accuracy * 100))
 
-test_folder_path = r'C:\Users\mklim\Desktop\Informatyczne systemy automatyki\electronic-components-scanner-main\ai_jpg'
-test_images = [os.path.join(test_folder_path, filename) for filename in os.listdir(test_folder_path)]
+precision = precision_score(y_test, y_pred[:len(y_test)])
+print("Precyzja modelu: {:.2f}".format(precision))
 
-print("INFO: predykcja")
-# predykcja
-results = []
-for image_path in test_images:
-    image = preprocess_image(image_path)
-    text = ' '.join([res[1] for res in reader.readtext(np.array(image))])
-    text_vec = vectorizer.transform([text])
-    prediction = best_classifier.predict(text_vec)
-    results.append((image_path, text, prediction[0]))
+recall = recall_score(y_test, y_pred[:len(y_test)])
+print("Czułość modelu: {:.2f}".format(recall))
 
-print("INFO: zapis predykcji do pliku")
-# zapis do pliku
-output_csv_path = 'predictions.csv'
-with open(output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-    writer = csv.writer(csvfile)
-    writer.writerow(['Image_Path', 'Text', 'Prediction'])
-    writer.writerows(results)
-    
-print("Results saved to", output_csv_path)
-
-print("INFO: zapis modelu")
-model_and_vectorizer_path = "model_and_vectorizer_multinomial.pkl"
-joblib.dump((best_classifier, vectorizer), model_and_vectorizer_path)
-
-print("Model and vectorizer saved to", model_and_vectorizer_path)
+conf_matrix = confusion_matrix(y_test, y_pred[:len(y_test)])
+print("Macierz pomyłek:")
+print(conf_matrix)

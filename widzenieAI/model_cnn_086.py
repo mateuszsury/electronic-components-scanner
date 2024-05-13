@@ -112,11 +112,27 @@ for epoch in range(num_epochs):
 
 # ewaluacja do określenia dokładności
 model.eval()
+from sklearn.metrics import precision_score, recall_score, confusion_matrix
+
+# ewaluacja precyzji i czułości
 with torch.no_grad():
     outputs = model(X_test)
     predicted = torch.argmax(outputs, dim=1)
-    accuracy = torch.mean((predicted == torch.argmax(y_test, dim=1)).float())
+    y_test_argmax = torch.argmax(y_test, dim=1)
+    accuracy = torch.mean((predicted == y_test_argmax).float())
+
+    precision = precision_score(y_test_argmax.cpu(), predicted.cpu(), average='macro')
+    recall = recall_score(y_test_argmax.cpu(), predicted.cpu(), average='macro')
+    
     print(f"Accuracy: {accuracy}")
+    print(f"Precision: {precision}")
+    print(f"Recall: {recall}")
+
+    # Macierz pomyłek
+    confusion = confusion_matrix(y_test_argmax.cpu(), predicted.cpu())
+    print("Confusion Matrix:")
+    print(confusion)
+
 
 # zapis modelu
 torch.save(model.state_dict(), 'text_recognition_model.pth')

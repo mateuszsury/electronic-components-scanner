@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, accuracy_score, precision_score, recall_score, confusion_matrix
 import os
 import rembg
 import numpy as np
@@ -100,4 +100,14 @@ classifier.fit(X_train_text_tfidf, y_train)
 y_pred = classifier.predict(X_test_text_tfidf)
 
 accuracy = accuracy_score(y_test, y_pred[:len(y_test)])
-print(f"Accuracy: {accuracy}")
+print("Dokładność modelu: {:.2f}%".format(accuracy * 100))
+
+precision = precision_score(y_test, y_pred[:len(y_test)])
+print("Precyzja modelu: {:.2f}".format(precision))
+
+recall = recall_score(y_test, y_pred[:len(y_test)])
+print("Czułość modelu: {:.2f}".format(recall))
+
+conf_matrix = confusion_matrix(y_test, y_pred[:len(y_test)])
+print("Macierz pomyłek:")
+print(conf_matrix)
