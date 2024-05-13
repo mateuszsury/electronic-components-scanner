@@ -1,14 +1,17 @@
-
+import os
 import rembg
 import numpy as np
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 import easyocr
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
+import csv
+import os
 
+folder_path = r'C:\Users\mklim\Desktop\Informatyczne systemy automatyki\electronic-components-scanner-main\ai_jpg'
 
 def find_bounding_box(image_array):
     rows = np.any(image_array != [0, 0, 0, 0], axis=(1, 2))
@@ -47,7 +50,9 @@ def preprocess_image(image_path):
     # konwersja do RGB przed zapisaniem
     output_image_resized_rgb = output_image_resized.convert('RGB')
 
-    return np.array(output_image_resized_rgb)  
+    return np.array(output_image_resized_rgb)  # Zwróć obraz jako tablicę numpy
+
+    
 
 # promień wyostrzania
 SHARPEN_RADIUS = 1
@@ -57,7 +62,7 @@ TARGET_HEIGHT = 200
 # inicjalizacja easyocr
 reader = easyocr.Reader(['en'])
 
-training_data_path = 'training_data.csv'
+import pandas as pd
 
 data = pd.read_csv('training_data.csv', sep=',', names=['Image_Path', 'Text', 'Is_Correct'])
 
@@ -69,8 +74,8 @@ for index, row in data.iterrows():
     image_path = row['Image_Path']
     text = row['Text']
     is_correct = row['Is_Correct']
-    image = preprocess_image(image_path) 
-    X.append(np.array(image)) 
+    image = preprocess_image(image_path)  # przetworzenie obrazu
+    X.append(np.array(image))  # dodanie przetworzonego obrazu do listy X
     y.append(1 if is_correct == 'y' else 0)
 
 print("INFO: przed konwersją obrazów na tablicę numpy")
@@ -86,26 +91,14 @@ data = data.dropna(subset=['Text'])
 # przekształcenie tekstu na cechy
 X_train_vec = vectorizer.fit_transform(data['Text'])
 
-# modyfikacja hiperparametrów
-from sklearn.model_selection import GridSearchCV
-
-hyperparameters = {'alpha': [1, 0.5, 1.0],
-                   'fit_prior': [True, False]}
-
-grid_search = GridSearchCV(MultinomialNB(), hyperparameters, cv=5, verbose=0)
-grid_search.fit(X_train_vec, y_train)
-
-best_params = grid_search.best_params_
-print("Best hyperparameters:", best_params)
-
-
-best_classifier = MultinomialNB(alpha=best_params['alpha'], fit_prior=best_params['fit_prior'])
-best_classifier.fit(X_train_vec, y_train)
+classifier = MultinomialNB()
+classifier.fit(X_train_vec, y_train[:len(X_train_vec)])
 
 # ocena modelu na danych testowych
 X_test_vec = vectorizer.transform(data['Text'])
-y_pred = best_classifier.predict(X_test_vec)
+y_pred = classifier.predict(X_test_vec)
 
+# dokładność
 accuracy = accuracy_score(y_test, y_pred[:len(y_test)])
 print("Dokładność modelu: {:.2f}%".format(accuracy * 100))
 
@@ -118,3 +111,13 @@ print("Czułość modelu: {:.2f}".format(recall))
 conf_matrix = confusion_matrix(y_test, y_pred[:len(y_test)])
 print("Macierz pomyłek:")
 print(conf_matrix)
+
+
+import joblib
+
+print("INFO: zapis modelu")
+model_and_vectorizer_path = "model_and_vectorizer_multinomial.pkl"
+joblib.dump((classifier, vectorizer), model_and_vectorizer_path)
+
+print("Model and vectorizer saved to", model_and_vectorizer_path)
+
