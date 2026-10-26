@@ -5,6 +5,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 from selen import find_element
 from compar import compare_to_database
 import re
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ def home():
 
                 if is_image:
                     # Przetwarzanie obrazu za pomocą OCR
-                    extracted_text = clean_string(read_text_from_image(file, r'own_ocr\model_and_vectorizer_multinomial.pkl')[0].upper())
+                    extracted_text = clean_string(read_text_from_image(file, str(Path(__file__).parent / 'own_ocr' / 'model_and_vectorizer_multinomial.pkl'))[0].upper())
                     print('Extracted text by OCR:', extracted_text)
                     _extracted_text = None
                     if len(extracted_text) > 3:
@@ -113,4 +114,4 @@ def send_result(result, extracted_text):
         return jsonify(error='Error')
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='127.0.0.1', port=5000)

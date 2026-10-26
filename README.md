@@ -1,110 +1,43 @@
 # Electronic Component Datasheet Finder
 
-An AI-powered web server application for recognizing electronic components and retrieving their datasheets—whether by processing an image of the component or by manual input of its designation.
+An experimental Flask application for extracting component markings from images
+and looking up datasheets. The OCR pipeline and website scraping are research
+prototypes, not a production recognition service.
 
----
+## Run locally
 
-## Table of Contents
+Python 3.11 is the reference environment for the archived scikit-learn model.
+Use an isolated environment; model compatibility across scikit-learn versions
+is not guaranteed. OCR dependencies and model downloads can be large.
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Dependencies](#dependencies)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+```sh
+python3.11 -m venv .venv
+# Activate .venv using the command for your shell.
+python -m pip install -r requirements.txt
+cd electro_scanner
+python server.py
+```
 
----
+Open http://127.0.0.1:5000. Run from `electro_scanner/`: the existing data/model
+paths are relative to that directory. `difflib`, `csv`, `re` and concurrency
+helpers come with Python and must not be installed from pip.
 
-## Introduction
+## Repository contents
 
-This project is a complete application featuring both backend and frontend components. It leverages artificial intelligence to recognize electronic components from images and/or manual inputs. Once the component is identified, the application scrapes data from popular online databases to fetch the relevant datasheet, providing users with accurate and up-to-date information.
+* `electro_scanner/server.py`: Flask routes and result formatting.
+* `electro_scanner/selen.py`: datasheet lookup (HTTP scraping, despite the name).
+* `electro_scanner/compar.py`: matching markings against `elements.csv`.
+* `electro_scanner/own_ocr/`: model training/inference research and saved model.
+* `example_img/`: sample component photographs.
+* `baza_obrazow_jpg.rar`: historical image dataset archive.
 
----
+## Validation and limits
 
-## Features
+CI parses source files and exercises the Flask interface with OCR/network calls
+stubbed out. It does not claim OCR accuracy, remote site availability, model
+portability or dataset redistribution rights. To reproduce recognition results,
+record the Python/scikit-learn versions, model checksum, input image and expected
+marking. The saved pickle must only be loaded from a trusted source.
 
-- **AI-Powered Recognition:**  
-  Utilizes AI algorithms to accurately identify electronic components from uploaded images.
-
-- **Manual Search Option:**  
-  Allows users to directly enter component designations to search for datasheets.
-
-- **Data Scraping:**  
-  Automatically scrapes and compiles datasheet information from the most popular electronic component databases.
-
-- **User-Friendly Interface:**  
-  Provides a simple and intuitive web interface for effortless interaction.
-
-- **Complete Integration:**  
-  Combines both frontend and backend systems to deliver a seamless user experience.
-
----
-
-## Installation
-
-Follow these steps to set up the application locally:
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/mateuszsury/electronic-components-scanner.git
-   ```
-
-2. **Extract the Repository:**
-
-   If you have downloaded the repository as a ZIP file, extract it to your desired directory.
-
-3. **Install Required Libraries:**
-
-   Ensure you have Python installed, then install the necessary dependencies by running:
-
-   ```bash
-   pip install Flask difflib bs4 tqdm
-   ```
-
-4. **Run the Application:**
-
-   Navigate to the project directory and start the server with:
-
-   ```bash
-   python server.py
-   ```
-
----
-
-## Usage
-
-Once the server is running, you can access the application via your web browser:
-
-### Open Your Browser:
-
-Navigate to [http://127.0.0.1:5000/](http://127.0.0.1:5000/) (or the URL provided in your terminal).
-
-### Using the Interface:
-
-- **Image Recognition:**  
-  Upload an image of the electronic component. The AI module will process the image, identify the component, and then search for the corresponding datasheet.
-
-- **Manual Search:**  
-  Enter the component designation into the search bar to directly retrieve its datasheet.
-
----
-
-## Dependencies
-
-The project requires the following Python libraries:
-
-- **Flask:** A micro web framework for Python.
-- **difflib:** A module that provides classes and functions for comparing sequences.
-- **Beautiful Soup (bs4):** A library for parsing HTML and XML documents.
-- **tqdm:** A fast, extensible progress bar for loops and other iterative processes.
-
-Make sure these libraries are installed before running the application.
-
----
-
-## License
-
-This project is licensed under the MIT License.
+Original source code is MIT licensed; preserve any applicable original terms for
+third-party code and datasets. Maintainer: Mateusz Sury.
