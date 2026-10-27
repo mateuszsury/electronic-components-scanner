@@ -4,6 +4,21 @@ An experimental Flask application for extracting component markings from images
 and looking up datasheets. The OCR pipeline and website scraping are research
 prototypes, not a production recognition service.
 
+## Project overview
+
+An experimental Python and Flask application for component markings, OCR and datasheet lookup.
+
+![Component Datasheet Finder — Research pipeline. The interface preview and mocked route tests do not measure OCR accuracy or website availability.](docs/assets/presentation/overview.svg)
+
+Research pipeline. The interface preview and mocked route tests do not measure OCR accuracy or website availability.
+
+### Interface preview
+
+![electronic-components-scanner interface preview](docs/assets/presentation/interface-preview.png)
+
+The real Flask template rendered with empty result fields. This preview does not run OCR, load the model or contact a datasheet provider.
+
+
 ## Run locally
 
 Python 3.11 is the reference environment for the archived scikit-learn model.
