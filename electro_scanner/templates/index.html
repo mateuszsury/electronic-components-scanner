@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Electroscanner</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Component Datasheet Finder — OCR Research Prototype</title>
+    <meta name="description" content="Experimental component-marking OCR and datasheet lookup with a Python and Flask interface.">
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -22,13 +25,13 @@
                 <br>
                 <div class="text-input">
                     <p>or</p>
-                    <input id="text-input" type="text" name="text" placeholder="Enter marking">
+                    <input id="text-input" type="text" name="text" placeholder="Enter marking" aria-label="Component marking">
                 </div>
                 <br>
                 <p></p>
                 <div class="submit-button">
                     <label for="submit-button">Send</label>
-                    <button id="submit-button" type="button">Prześlij</button>
+                    <button id="submit-button" type="button">Find component</button>
                     <div id="loading-spinner" class="spinner" style="display: none;">
                         <br>
                         <p></p>
